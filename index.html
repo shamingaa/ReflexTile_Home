@@ -66,7 +66,12 @@
       display: flex; align-items: center; justify-content: space-between;
       background: linear-gradient(to bottom, rgba(9,7,5,0.97) 0%, transparent 100%);
     }
-    .nav-logo img  { height: 80px; width: auto; display: block; }
+    .nav-logo img {
+      height: 80px; width: auto; display: block;
+      mix-blend-mode: screen;
+      -webkit-mask-image: radial-gradient(ellipse 78% 78% at center, black 45%, transparent 100%);
+      mask-image: radial-gradient(ellipse 78% 78% at center, black 45%, transparent 100%);
+    }
     .nav-status {
       display: flex; align-items: center; gap: 8px;
       font-size: 10px; font-weight: 700;
@@ -447,7 +452,12 @@
       text-align: center;
     }
     .footer-logo { margin-bottom: 14px; }
-    .footer-logo img { height: 28px; width: auto; opacity: 0.35; }
+    .footer-logo img {
+      height: 28px; width: auto; opacity: 0.35;
+      mix-blend-mode: screen;
+      -webkit-mask-image: radial-gradient(ellipse 78% 78% at center, black 45%, transparent 100%);
+      mask-image: radial-gradient(ellipse 78% 78% at center, black 45%, transparent 100%);
+    }
     .footer-copy { font-size: 12px; color: var(--text3); letter-spacing: 0.07em; }
 
     /* ── RESPONSIVE ─────────────────────────────────────────── */
@@ -689,10 +699,41 @@
     document.querySelectorAll('.fade-up').forEach(function(el) { obs.observe(el); });
 
     // ── Email form ───────────────────────────────────────────
-    document.getElementById('notify-form').addEventListener('submit', function(e) {
+    var API_BASE = 'https://reflextile-api-v2.atlasholdin.com'; // change to http://localhost:4000 for local dev
+
+    document.getElementById('notify-form').addEventListener('submit', async function(e) {
       e.preventDefault();
-      this.style.display = 'none';
-      document.getElementById('notify-success').style.display = 'block';
+      var btn   = this.querySelector('.notify-btn');
+      var email = this.querySelector('.notify-input').value.trim();
+
+      btn.textContent = 'Sending…';
+      btn.disabled = true;
+
+      try {
+        var res  = await fetch(API_BASE + '/api/waitlist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email }),
+        });
+        var data = await res.json();
+
+        if (res.status === 409) {
+          // Already on the list — treat as success, no need to alarm them
+          this.style.display = 'none';
+          document.getElementById('notify-success').style.display = 'block';
+          return;
+        }
+        if (!res.ok) {
+          btn.textContent = data.error || 'Try again';
+          btn.disabled = false;
+          return;
+        }
+        this.style.display = 'none';
+        document.getElementById('notify-success').style.display = 'block';
+      } catch (err) {
+        btn.textContent = 'No connection — try again';
+        btn.disabled = false;
+      }
     });
   </script>
 </body>
