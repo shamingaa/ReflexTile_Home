@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reflex Titan — Coming Soon</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #090705;
+      --surface:   #0e0b07;
+      --raised:    #131008;
+      --border:    #211809;
+      --border-hi: #38280f;
+      --text:      #f0ece4;
+      --text2:     #857060;
+      --text3:     #352a1c;
+      --silver:    #cad2d8;
+      --orange:    #ff7a00;
+      --gold:      #ffcc00;
+      --ember:     #ff3b00;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Canvas fixed behind everything */
+    #ember-canvas {
+      position: fixed;
+      inset: 0; z-index: 0;
+      pointer-events: none;
+    }
+
+    /* All content above canvas */
+    nav, .hero, .about-block, .prizes-block, .sponsors-block, footer, .divider {
+      position: relative; z-index: 1;
+    }
+
+    /* ── SCROLL ANIMATIONS ─────────────────────────────────── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity 0.85s ease, transform 0.85s ease;
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    .d1 { transition-delay: 0.10s; }
+    .d2 { transition-delay: 0.20s; }
+    .d3 { transition-delay: 0.30s; }
+    .d4 { transition-delay: 0.40s; }
+
+    /* ── NAV ───────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 20px 44px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: linear-gradient(to bottom, rgba(9,7,5,0.97) 0%, transparent 100%);
+    }
+    .nav-logo img  { height: 80px; width: auto; display: block; }
+    .nav-status {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--text3);
+    }
+    .nav-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--orange);
+      box-shadow: 0 0 10px var(--orange);
+      animation: dot-pulse 2.2s ease-in-out infinite;
+    }
+    @keyframes dot-pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 10px var(--orange); }
+      50%       { opacity: 0.35; box-shadow: 0 0 4px var(--orange); }
+    }
+
+    /* ── HERO ──────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 140px 24px 110px;
+      overflow: hidden;
+    }
+
+    /* Orange radial glow */
+    .hero-glow {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 55% at 50% 42%,
+          rgba(255, 90, 0, 0.13) 0%,
+          rgba(255, 60, 0, 0.05) 45%,
+          transparent 72%);
+      pointer-events: none;
+    }
+
+    /* Drifting fog layers */
+    .fog {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      pointer-events: none;
+    }
+    .fog-a {
+      width: 750px; height: 500px;
+      background: radial-gradient(circle, rgba(255,70,0,0.09), transparent 70%);
+      top: 10%; left: -10%;
+      animation: fog-a 24s ease-in-out infinite;
+    }
+    .fog-b {
+      width: 600px; height: 420px;
+      background: radial-gradient(circle, rgba(255,35,0,0.06), transparent 70%);
+      bottom: 5%; right: -8%;
+      animation: fog-b 30s ease-in-out infinite;
+    }
+    .fog-c {
+      width: 400px; height: 300px;
+      background: radial-gradient(circle, rgba(255,120,0,0.06), transparent 70%);
+      top: 60%; left: 40%;
+      animation: fog-c 18s ease-in-out infinite;
+    }
+    @keyframes fog-a {
+      0%,100% { transform: translate(0,0) scale(1); opacity:0.8; }
+      40%      { transform: translate(90px,-60px) scale(1.2); opacity:1; }
+      70%      { transform: translate(-50px,40px) scale(0.88); opacity:0.5; }
+    }
+    @keyframes fog-b {
+      0%,100% { transform: translate(0,0) scale(1); opacity:0.7; }
+      50%      { transform: translate(-110px,40px) scale(1.25); opacity:1; }
+    }
+    @keyframes fog-c {
+      0%,100% { transform: translate(0,0) scale(1); opacity:0.6; }
+      33%      { transform: translate(40px,-30px) scale(1.1); opacity:1; }
+      66%      { transform: translate(-30px,20px) scale(0.9); opacity:0.4; }
+    }
+
+    .hero-content { position: relative; z-index: 2; max-width: 1000px; }
+
+    .hero-eyebrow {
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.34em; text-transform: uppercase;
+      color: var(--text2); margin-bottom: 38px;
+    }
+
+    /* REFLEX TITAN title */
+    .hero-title { line-height: 0.82; margin-bottom: 32px; }
+
+    .title-reflex {
+      display: block;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(48px, 10vw, 108px);
+      letter-spacing: 0.22em;
+      color: var(--silver);
+      opacity: 0.88;
+    }
+
+    .title-titan {
+      display: block;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(96px, 22vw, 230px);
+      letter-spacing: 0.03em;
+      background: linear-gradient(165deg, #ffe566 0%, #ffaa00 30%, #ff6800 65%, #ff2800 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter:
+        drop-shadow(0 3px 0 rgba(140,42,0,0.95))
+        drop-shadow(0 6px 0 rgba(90,20,0,0.75))
+        drop-shadow(0 12px 24px rgba(0,0,0,0.9))
+        drop-shadow(0 0 100px rgba(255,100,0,0.45));
+    }
+
+    /* Challenge copy */
+    .hero-challenge {
+      font-size: clamp(14px, 2vw, 17px);
+      font-weight: 300; letter-spacing: 0.08em;
+      color: var(--text2); margin-bottom: 52px;
+    }
+    .hero-challenge strong {
+      color: var(--silver); font-weight: 600; font-style: normal;
+    }
+
+    /* COMING SOON */
+    .cs-wrap {
+      display: flex; align-items: center; justify-content: center;
+      gap: 18px; margin-bottom: 56px;
+    }
+    .cs-line {
+      flex: 1; max-width: 90px; height: 1px;
+      background: linear-gradient(to right, transparent, rgba(255,122,0,0.45));
+    }
+    .cs-line.r { background: linear-gradient(to left, transparent, rgba(255,122,0,0.45)); }
+    .cs-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(32px, 5.5vw, 58px);
+      letter-spacing: 0.22em;
+      background: linear-gradient(135deg, #ff8c00, #ff3b00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: cs-pulse 3.2s ease-in-out infinite;
+    }
+    @keyframes cs-pulse {
+      0%,100% { filter: drop-shadow(0 0 18px rgba(255,80,0,0.65)); }
+      50%      { filter: drop-shadow(0 0 55px rgba(255,80,0,1)) drop-shadow(0 0 100px rgba(255,50,0,0.45)); }
+    }
+
+    /* Email form */
+    .notify-form {
+      display: flex; max-width: 480px; margin: 0 auto;
+      border: 1px solid var(--border-hi);
+      background: rgba(13,10,6,0.92);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .notify-form:focus-within {
+      border-color: rgba(255,122,0,0.55);
+      box-shadow: 0 0 0 3px rgba(255,100,0,0.07), 0 0 28px rgba(255,70,0,0.18);
+    }
+    .notify-input {
+      flex: 1; padding: 17px 20px;
+      background: transparent; border: none;
+      color: var(--text); font-size: 13px;
+      font-family: inherit; outline: none;
+      letter-spacing: 0.06em;
+    }
+    .notify-input::placeholder { color: var(--text3); letter-spacing: 0.12em; }
+    .notify-btn {
+      padding: 17px 28px;
+      background: linear-gradient(135deg, #ff8200, #ff4200);
+      color: #fff; font-size: 11px; font-weight: 800;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      border: none; cursor: pointer; font-family: inherit;
+      white-space: nowrap;
+      transition: filter 0.15s;
+    }
+    .notify-btn:hover {
+      filter: brightness(1.18) drop-shadow(0 0 20px rgba(255,100,0,0.6));
+    }
+    .notify-success {
+      display: none;
+      font-size: 13px; color: var(--orange); letter-spacing: 0.07em;
+      padding: 17px 22px;
+      border: 1px solid rgba(255,122,0,0.22);
+      background: rgba(255,100,0,0.04);
+      max-width: 480px; margin: 0 auto;
+    }
+
+    /* Scroll hint */
+    .scroll-hint {
+      position: absolute; bottom: 38px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 7px;
+      font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase;
+      color: var(--text3); z-index: 2;
+      animation: sh-bounce 2.6s ease-in-out infinite;
+    }
+    @keyframes sh-bounce {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50%      { transform: translateX(-50%) translateY(8px); }
+    }
+
+    /* ── DIVIDERS ───────────────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255,100,0,0.3) 25%,
+        rgba(255,200,0,0.35) 50%,
+        rgba(255,100,0,0.3) 75%,
+        transparent 100%);
+    }
+
+    /* ── SHARED SECTION ─────────────────────────────────────── */
+    .section-inner {
+      max-width: 1060px; margin: 0 auto;
+      padding: 96px 28px;
+    }
+    .section-eyebrow {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.38em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(42px, 6.5vw, 72px);
+      letter-spacing: 0.04em; line-height: 0.9;
+      color: var(--silver); margin-bottom: 60px;
+    }
+    .section-title span {
+      background: linear-gradient(135deg, #ffe066 0%, #ff9900 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── ABOUT ─────────────────────────────────────────────── */
+    .about-block { background: var(--surface); }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1px; background: var(--border);
+      border: 1px solid var(--border);
+    }
+    .about-card {
+      background: var(--surface);
+      padding: 48px 36px;
+      transition: background 0.2s;
+    }
+    .about-card:hover { background: var(--raised); }
+    .about-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 60px; letter-spacing: 0.04em; line-height: 1;
+      background: linear-gradient(160deg, rgba(255,122,0,0.55), rgba(255,55,0,0.2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 22px;
+    }
+    .about-heading {
+      font-size: 12px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.16em;
+      color: var(--silver); margin-bottom: 14px;
+    }
+    .about-body {
+      font-size: 14px; color: var(--text2); line-height: 1.85;
+    }
+
+    /* ── PRIZES ────────────────────────────────────────────── */
+    .prizes-block { background: var(--bg); }
+    .prizes-block .section-inner { text-align: center; }
+
+    .prizes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+    }
+    .prize-card {
+      background: var(--raised);
+      border: 1px solid var(--border);
+      padding: 46px 24px 38px;
+      position: relative; overflow: hidden;
+      transition: transform 0.22s, border-color 0.22s;
+    }
+    .prize-card:hover { transform: translateY(-5px); }
+    .prize-card::after {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+    .prize-card.gold {
+      border-color: rgba(245,197,24,0.22);
+      background: linear-gradient(175deg, #110e00, var(--raised) 55%);
+    }
+    .prize-card.gold::after   { background: linear-gradient(90deg, transparent, #f5c518, transparent); }
+    .prize-card.silver::after { background: linear-gradient(90deg, transparent, #a8b2be, transparent); }
+    .prize-card.bronze::after { background: linear-gradient(90deg, transparent, #cd7f32, transparent); }
+    .prize-card.sponsor::after { background: linear-gradient(90deg, transparent, var(--orange), transparent); }
+
+    .prize-medal { font-size: 40px; display: block; margin-bottom: 18px; }
+    .prize-rank {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--text2); margin-bottom: 14px;
+    }
+    .prize-amount {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(40px, 5.5vw, 58px);
+      letter-spacing: 0.02em; line-height: 1;
+    }
+    .prize-card.gold   .prize-amount { color: #f5c518; filter: drop-shadow(0 0 22px rgba(245,197,24,0.55)); }
+    .prize-card.silver .prize-amount { color: #a8b2be; }
+    .prize-card.bronze .prize-amount { color: #cd7f32; }
+    .prize-card.sponsor .prize-amount { color: var(--orange); filter: drop-shadow(0 0 18px rgba(255,122,0,0.45)); }
+    .prize-desc { font-size: 11px; color: var(--text3); margin-top: 10px; letter-spacing: 0.06em; }
+
+    .total-wrap {
+      margin-top: 32px;
+      display: inline-flex; align-items: center; gap: 28px;
+      border: 1px solid var(--border-hi);
+      padding: 20px 36px;
+      background: var(--raised);
+    }
+    .total-label {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--text2);
+    }
+    .total-sep { width: 1px; height: 32px; background: var(--border-hi); }
+    .total-amount {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 38px; letter-spacing: 0.04em;
+      background: linear-gradient(135deg, #ffe066, #ff9900);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── SPONSORS ───────────────────────────────────────────── */
+    .sponsors-block { background: var(--surface); }
+    .sponsors-block .section-inner { text-align: center; }
+
+    .powered-label {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.4em; text-transform: uppercase;
+      color: var(--text3); margin-bottom: 56px;
+    }
+    .sponsor-row {
+      display: flex; align-items: center; justify-content: center;
+      gap: 72px; flex-wrap: wrap;
+    }
+    .sponsor-item {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 18px;
+      opacity: 0.5; transition: opacity 0.28s;
+    }
+    .sponsor-item:hover { opacity: 1; }
+    .sponsor-item img {
+      height: 80px; width: auto; max-width: 200px;
+      object-fit: contain; display: block;
+      filter: brightness(0.9);
+      transition: filter 0.28s;
+    }
+    .sponsor-item:hover img { filter: brightness(1.05); }
+    .sponsor-name {
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.24em; text-transform: uppercase;
+      color: var(--text2);
+    }
+    .sponsor-sep { width: 1px; height: 64px; background: var(--border); }
+
+    /* ── FOOTER ─────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 52px 24px;
+      text-align: center;
+    }
+    .footer-logo { margin-bottom: 14px; }
+    .footer-logo img { height: 28px; width: auto; opacity: 0.35; }
+    .footer-copy { font-size: 12px; color: var(--text3); letter-spacing: 0.07em; }
+
+    /* ── RESPONSIVE ─────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      nav { padding: 18px 20px; }
+      .hero-challenge { letter-spacing: 0; }
+      .total-wrap { flex-direction: column; gap: 14px; padding: 20px 28px; }
+      .sponsor-sep { display: none; }
+      .section-inner { padding: 72px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="ember-canvas"></canvas>
+
+  <!-- ── NAV ─────────────────────────────────────────────────── -->
+  <nav>
+    <a class="nav-logo" href="#">
+      <img src="../client/public/appLogo.png" alt="Reflex Titan" />
+    </a>
+    <div class="nav-status">
+      <div class="nav-dot"></div>
+      Coming Soon
+    </div>
+  </nav>
+
+  <!-- ══ HERO ══════════════════════════════════════════════════ -->
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <div class="fog fog-a"></div>
+    <div class="fog fog-b"></div>
+    <div class="fog fog-c"></div>
+
+    <div class="hero-content">
+      <p class="hero-eyebrow fade-up">Nigeria's Ultimate Online Reflex Competition</p>
+
+      <div class="hero-title fade-up d1">
+        <span class="title-reflex">REFLEX</span>
+        <span class="title-titan">TITAN</span>
+      </div>
+
+      <p class="hero-challenge fade-up d2">
+        <strong>Speed is the only currency.</strong>&ensp;Do you have enough?
+      </p>
+
+      <div class="cs-wrap fade-up d3">
+        <div class="cs-line"></div>
+        <span class="cs-text">COMING SOON</span>
+        <div class="cs-line r"></div>
+      </div>
+
+      <form class="notify-form fade-up d4" id="notify-form">
+        <input
+          class="notify-input"
+          type="email"
+          placeholder="YOUR EMAIL ADDRESS"
+          required
+        />
+        <button class="notify-btn" type="submit">Enter the Arena</button>
+      </form>
+      <p class="notify-success" id="notify-success">
+        ✓&ensp;You're on the list. Prepare yourself.
+      </p>
+    </div>
+
+    <div class="scroll-hint">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 5v14M5 12l7 7 7-7"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══ ABOUT ══════════════════════════════════════════════════ -->
+  <div class="about-block">
+    <div class="section-inner">
+      <p class="section-eyebrow fade-up">The Game</p>
+      <h2 class="section-title fade-up d1">ONLY THE <span>FASTEST</span><br>SURVIVE</h2>
+      <div class="about-grid">
+        <div class="about-card fade-up">
+          <p class="about-num">01</p>
+          <p class="about-heading">Tap or Fall</p>
+          <p class="about-body">A glowing tile appears on the grid. You have milliseconds to react before it vanishes. Miss it and your time drains. One mistake compounds into defeat. There is no recovery — only damage control.</p>
+        </div>
+        <div class="about-card fade-up d1">
+          <p class="about-num">02</p>
+          <p class="about-heading">Speed Is Earned</p>
+          <p class="about-body">Every tile you hit makes the next one harder. The game reads your reactions and accelerates to find your breaking point. There is no ceiling — only the moment you collapse under pressure.</p>
+        </div>
+        <div class="about-card fade-up d2">
+          <p class="about-num">03</p>
+          <p class="about-heading">The Board Doesn't Lie</p>
+          <p class="about-body">One global leaderboard. Real money on the line. Your name — visible to every competitor in Nigeria. Rise and be remembered. Fail and be erased. There is no middle ground.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══ PRIZES ════════════════════════════════════════════════ -->
+  <div class="prizes-block">
+    <div class="section-inner">
+      <p class="section-eyebrow fade-up">What's at Stake</p>
+      <h2 class="section-title fade-up d1">PRIZE <span>POOL</span></h2>
+      <div class="prizes-grid">
+        <div class="prize-card gold fade-up">
+          <span class="prize-medal">🥇</span>
+          <p class="prize-rank">1st Place</p>
+          <p class="prize-amount">&#8358;100,000</p>
+          <p class="prize-desc">Highest Score</p>
+        </div>
+        <div class="prize-card silver fade-up d1">
+          <span class="prize-medal">🥈</span>
+          <p class="prize-rank">2nd Place</p>
+          <p class="prize-amount">&#8358;70,000</p>
+          <p class="prize-desc">Highest Score</p>
+        </div>
+        <div class="prize-card bronze fade-up d2">
+          <span class="prize-medal">🥉</span>
+          <p class="prize-rank">3rd Place</p>
+          <p class="prize-amount">&#8358;30,000</p>
+          <p class="prize-desc">Highest Score</p>
+        </div>
+        <div class="prize-card sponsor fade-up d3">
+          <span class="prize-medal">🔥</span>
+          <p class="prize-rank">Sponsor Tiles</p>
+          <p class="prize-amount">&#8358;10,000</p>
+          <p class="prize-desc">Most Sponsor Tiles Tapped</p>
+        </div>
+      </div>
+      <div class="total-wrap fade-up d2">
+        <span class="total-label">Total Prize Pool</span>
+        <div class="total-sep"></div>
+        <span class="total-amount">&#8358;210,000</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══ SPONSORS ═══════════════════════════════════════════════ -->
+  <div class="sponsors-block">
+    <div class="section-inner">
+      <p class="powered-label fade-up">Powered By</p>
+      <div class="sponsor-row">
+        <div class="sponsor-item fade-up">
+          <img src="../client/public/logo_one.png" alt="Tuberway" />
+          <p class="sponsor-name">Tuberway</p>
+        </div>
+        <div class="sponsor-sep fade-up d1"></div>
+        <div class="sponsor-item fade-up d2">
+          <img src="../client/public/logo_two.png" alt="1Percent" />
+          <p class="sponsor-name">1Percent</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FOOTER ═════════════════════════════════════════════════ -->
+  <footer>
+    <div class="footer-logo">
+      <img src="../client/public/appLogo.png" alt="Reflex Titan" />
+    </div>
+    <p class="footer-copy">&copy; 2026 Reflex Titan. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // ── Ember particle system ────────────────────────────────
+    var canvas = document.getElementById('ember-canvas');
+    var ctx    = canvas.getContext('2d');
+    var W, H;
+
+    function resize() {
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    var COLORS = ['#ff7a00','#ff9500','#ffb500','#ff5200','#ff3300','#ffcc00'];
+
+    function Ember() { this.reset(true); }
+    Ember.prototype.reset = function(init) {
+      this.x     = Math.random() * W;
+      this.y     = init ? Math.random() * H : H + 10;
+      this.r     = Math.random() * 1.7 + 0.3;
+      this.vy    = -(Math.random() * 0.65 + 0.22);
+      this.vx    = (Math.random() - 0.5) * 0.28;
+      this.alpha = Math.random() * 0.5 + 0.12;
+      this.life  = 1;
+      this.decay = Math.random() * 0.002 + 0.0007;
+      this.drift = Math.random() * Math.PI * 2;
+      this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+    };
+    Ember.prototype.step = function(t) {
+      this.x    += this.vx + Math.sin(t * 0.00075 + this.drift) * 0.16;
+      this.y    += this.vy;
+      this.life -= this.decay;
+      if (this.life <= 0 || this.y < -10) this.reset(false);
+    };
+    Ember.prototype.draw = function() {
+      var a = this.alpha * Math.max(0, this.life);
+      ctx.save();
+      ctx.globalAlpha = a;
+      ctx.shadowBlur  = 7;
+      ctx.shadowColor = this.color;
+      ctx.fillStyle   = this.color;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    };
+
+    var particles = [];
+    for (var i = 0; i < 100; i++) particles.push(new Ember());
+
+    function loop(t) {
+      ctx.clearRect(0, 0, W, H);
+      for (var j = 0; j < particles.length; j++) {
+        particles[j].step(t);
+        particles[j].draw();
+      }
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+
+    // ── Scroll fade-in ───────────────────────────────────────
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-up').forEach(function(el) { obs.observe(el); });
+
+    // ── Email form ───────────────────────────────────────────
+    document.getElementById('notify-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      this.style.display = 'none';
+      document.getElementById('notify-success').style.display = 'block';
+    });
+  </script>
+</body>
+</html>
