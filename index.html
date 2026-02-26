@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>Reflex Titan — Coming Soon</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -467,6 +467,13 @@
       .total-wrap { flex-direction: column; gap: 14px; padding: 20px 28px; }
       .sponsor-sep { display: none; }
       .section-inner { padding: 72px 20px; }
+
+      .notify-form { flex-direction: column; max-width: 100%; }
+      .notify-input {
+        font-size: 16px; /* prevents iOS zoom on focus */
+        border-bottom: 1px solid var(--border-hi);
+      }
+      .notify-btn { width: 100%; padding: 18px; text-align: center; }
     }
   </style>
 </head>
