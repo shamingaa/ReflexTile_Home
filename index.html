@@ -477,49 +477,7 @@
     }
     .footer-copy { font-size: 12px; color: var(--text3); letter-spacing: 0.07em; }
 
-    /* ── COUNTDOWN ──────────────────────────────────────────── */
-    .countdown {
-      display: flex; align-items: flex-start; justify-content: center;
-      gap: 8px; margin-bottom: 48px;
-    }
-    .cd-block {
-      display: flex; flex-direction: column; align-items: center;
-      min-width: 72px;
-    }
-    .cd-num {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(48px, 9vw, 80px);
-      line-height: 1;
-      background: linear-gradient(165deg, #ffe566 0%, #ffaa00 40%, #ff6000 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      filter: drop-shadow(0 0 20px rgba(255,120,0,0.45));
-      font-variant-numeric: tabular-nums;
-    }
-    .cd-label {
-      font-size: 9px; font-weight: 700;
-      letter-spacing: 0.3em; text-transform: uppercase;
-      color: var(--text3); margin-top: 4px;
-    }
-    .cd-sep {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(40px, 7vw, 64px);
-      color: var(--border-hi); line-height: 1;
-      margin-top: 4px; user-select: none;
-    }
-    .cd-expired {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(28px, 5vw, 48px);
-      letter-spacing: 0.1em;
-      background: linear-gradient(135deg, #ff8c00, #ff3b00);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 48px;
-    }
-
-    /* ── RESPONSIVE ──────────────────────────────────────────── */
+/* ── RESPONSIVE ──────────────────────────────────────────── */
     @media (max-width: 640px) {
       nav { padding: 18px 20px; }
       .hero-challenge { letter-spacing: 0; }
@@ -576,29 +534,7 @@
         <div class="cs-line r"></div>
       </div>
 
-      <div id="countdown" class="countdown fade-up d4">
-        <div class="cd-block">
-          <span class="cd-num" id="cd-days">00</span>
-          <span class="cd-label">Days</span>
-        </div>
-        <span class="cd-sep">:</span>
-        <div class="cd-block">
-          <span class="cd-num" id="cd-hours">00</span>
-          <span class="cd-label">Hours</span>
-        </div>
-        <span class="cd-sep">:</span>
-        <div class="cd-block">
-          <span class="cd-num" id="cd-mins">00</span>
-          <span class="cd-label">Mins</span>
-        </div>
-        <span class="cd-sep">:</span>
-        <div class="cd-block">
-          <span class="cd-num" id="cd-secs">00</span>
-          <span class="cd-label">Secs</span>
-        </div>
-      </div>
-
-      <form class="notify-form fade-up d4" id="notify-form">
+<form class="notify-form fade-up d4" id="notify-form">
         <input
           class="notify-input"
           type="email"
@@ -775,36 +711,7 @@
     }
     requestAnimationFrame(loop);
 
-    // ── Countdown to March 13 2026 ──────────────────────────
-    var TARGET = new Date('2026-03-13T00:00:00').getTime();
-
-    function pad(n) { return String(n).padStart(2, '0'); }
-
-    function tickCountdown() {
-      var now  = Date.now();
-      var diff = TARGET - now;
-
-      if (diff <= 0) {
-        document.getElementById('countdown').innerHTML =
-          '<p class="cd-expired">The Arena is Open</p>';
-        return;
-      }
-
-      var days  = Math.floor(diff / (1000 * 60 * 60 * 24));
-      var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      var mins  = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      var secs  = Math.floor((diff % (1000 * 60)) / 1000);
-
-      document.getElementById('cd-days').textContent  = pad(days);
-      document.getElementById('cd-hours').textContent = pad(hours);
-      document.getElementById('cd-mins').textContent  = pad(mins);
-      document.getElementById('cd-secs').textContent  = pad(secs);
-    }
-
-    tickCountdown();
-    setInterval(tickCountdown, 1000);
-
-    // ── Scroll fade-in ───────────────────────────────────────
+// ── Scroll fade-in ───────────────────────────────────────
     var obs = new IntersectionObserver(function(entries) {
       entries.forEach(function(e) {
         if (e.isIntersecting) {
