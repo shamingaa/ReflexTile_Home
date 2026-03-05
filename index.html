@@ -479,16 +479,37 @@
 
     /* ── HERO RULES ─────────────────────────────────────────── */
     .hero-rules {
-      display: flex; flex-direction: column; gap: 6px;
-      margin-bottom: 44px;
-      font-size: clamp(14px, 2vw, 17px);
-      font-weight: 400; letter-spacing: 0.04em;
-      color: var(--text2);
+      display: flex; flex-direction: column; align-items: center;
+      gap: 0; margin-bottom: 52px;
+    }
+    .hero-rules__action {
+      font-size: clamp(16px, 2.4vw, 22px);
+      font-weight: 500; letter-spacing: 0.06em;
+      color: var(--silver);
+      margin-bottom: 10px;
+    }
+    .hero-rules__timer {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: clamp(12px, 1.6vw, 14px);
+      font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 24px;
+    }
+    .hero-rules__timer::before,
+    .hero-rules__timer::after {
+      content: '';
+      display: block; width: 32px; height: 1px;
+      background: rgba(255,122,0,0.4);
     }
     .hero-rules__prize {
-      color: var(--gold);
-      font-weight: 700;
-      letter-spacing: 0.06em;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(32px, 5.5vw, 56px);
+      letter-spacing: 0.06em; line-height: 1;
+      background: linear-gradient(135deg, #ffe566 0%, #ffaa00 50%, #ff7a00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 28px rgba(255,160,0,0.5));
     }
 
 /* ── RESPONSIVE ──────────────────────────────────────────── */
@@ -538,9 +559,9 @@
         <span class="title-titan">TITAN</span>
       </div>
 
-<div class="hero-rules fade-up d3">
-        <p>Tap the green tile faster than anyone.</p>
-        <p>You have 28 seconds.</p>
+      <div class="hero-rules fade-up d3">
+        <p class="hero-rules__action">Tap the green tile faster than anyone.</p>
+        <p class="hero-rules__timer">You have 28 seconds</p>
         <p class="hero-rules__prize">Fastest players win &#8358;120,000</p>
       </div>
 
